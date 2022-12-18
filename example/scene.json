@@ -1,0 +1,88 @@
+{
+  "BoxStyles": [
+    {
+      "TopColor": "#ffffff",
+      "BottomColor": "#ffffff",
+      "LeftColor": "#ffffff",
+      "RightColor": "#ffffff",
+      "FrontColor": "#ffffff",
+      "BackColor": "#ffffff",
+      "BoxSizeX": 1,
+      "BoxSizeY": 1
+    },
+    {
+      "TopColor": "wood.png",
+      "BottomColor": "wood.png",
+      "LeftColor": "wood.png",
+      "RightColor": "wood.png",
+      "FrontColor": "wood.png",
+      "BackColor": "wood.png",
+      "BoxSizeX": 1,
+      "BoxSizeY": 1
+    }
+  ],
+  "Cameras": [
+    {
+      "FieldOfView": 65.0,
+      "ResolutionX": 256,
+      "ResolutionY": 180,
+      "SamplesPerPixel": 16,
+      "Position": { "X": 0, "Y": 2, "Z": 0 },
+      "Target": { "X": 0, "Y": 0, "Z": 5 },
+      "OutputPath": "image.png"
+    },
+    {
+      "FieldOfView": 45.0,
+      "ResolutionX": 320,
+      "ResolutionY": 240,
+      "SamplesPerPixel": 16,
+      "Position": { "X": 3, "Y": 5, "Z": 1 },
+      "Target": { "X": 0, "Y": 0, "Z": 6 },
+      "OutputPath": "image2.png"
+    }
+  ],
+  "DiffuseBoxes": [
+    {
+      "Position": { "X": -1, "Y": 0, "Z": 5 },
+      "StyleIndex": 1
+    },
+    {
+      "Position": { "X": 0, "Y": 0, "Z": 5 },
+      "StyleIndex": 1
+    },
+    {
+      "Position": { "X": 1, "Y": 0, "Z": 5 },
+      "StyleIndex": 1
+    },
+    {
+      "Position": { "X": -1, "Y": 0, "Z": 6 },
+      "StyleIndex": 1
+    },
+    {
+      "Position": { "X": 0, "Y": 0, "Z": 6 },
+      "StyleIndex": 1
+    },
+    {
+      "Position": { "X": 1, "Y": 0, "Z": 6 },
+      "StyleIndex": 1
+    },
+    {
+      "Position": { "X": -1, "Y": 0, "Z": 7 },
+      "StyleIndex": 1
+    },
+    {
+      "Position": { "X": 0, "Y": 0, "Z": 7 },
+      "StyleIndex": 1
+    },
+    {
+      "Position": { "X": 1, "Y": 0, "Z": 7 },
+      "StyleIndex": 1
+    }
+  ],
+  "EmissiveBoxes": [
+    {
+      "Position": { "X": 0, "Y": 2, "Z": 5 },
+      "StyleIndex": 0
+    }
+  ]
+}
