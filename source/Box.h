@@ -4,11 +4,13 @@
 
 #include <nlohmann/json.hpp>
 
+#include "Scalar.h"
+
 namespace mcr {
 
 struct Box final
 {
-  bvh::v2::Vec<double, 3> position;
+  bvh::v2::Vec<Scalar, 3> position;
 
   size_t style_index{ 0 };
 

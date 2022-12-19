@@ -4,12 +4,12 @@
 
 namespace mcr {
 
-bvh::v2::Vec<double, 3>
+bvh::v2::Vec<Scalar, 3>
 get_xyz(const nlohmann::json& node)
 {
-  return { node["X"].get<double>(),
-           node["Y"].get<double>(),
-           node["Z"].get<double>() };
+  return { node["X"].get<Scalar>(),
+           node["Y"].get<Scalar>(),
+           node["Z"].get<Scalar>() };
 }
 
 } // namespace mcr

@@ -4,37 +4,39 @@
 
 #include <nlohmann/json_fwd.hpp>
 
+#include <filesystem>
 #include <vector>
 
 #include "Utility.h"
+#include "Scalar.h"
 
 namespace mcr {
 
 class Texture final
 {
 public:
-  using Color = bvh::v2::Vec<double, 4>;
+  using Color = bvh::v2::Vec<Scalar, 4>;
 
-  Texture(const nlohmann::json& node);
+  explicit Texture(const nlohmann::json& node, const std::filesystem::path& directory_path);
 
   Texture(Texture&& other) = default;
 
   Texture(int w, int h, std::vector<Color> color);
 
-  Color at(double u, double v) const
+  [[nodiscard]] auto at(const Scalar u, const Scalar v) const
   {
     const int x = clamp(static_cast<int>(u * width_), 0, width_ - 1);
     const int y = clamp(static_cast<int>(v * height_), 0, height_ - 1);
     return color_[(y * width_) + x];
   }
 
-  int pixel_count() const { return width_ * height_; }
+  [[nodiscard]] auto pixel_count() const { return width_ * height_; }
 
-  int width() const { return width_; }
+  [[nodiscard]] auto width() const { return width_; }
 
-  int height() const { return height_; }
+  [[nodiscard]] auto height() const { return height_; }
 
-  bool save_png(const char* path) const;
+  [[nodiscard]] bool save_png(const char* path) const;
 
 private:
   std::vector<Color> color_;

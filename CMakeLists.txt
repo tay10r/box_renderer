@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14.7)
 
-project(minecraft_style_renderer)
+project(box_renderer)
 
 include(FetchContent)
 
@@ -18,8 +18,12 @@ FetchContent_Declare(stb URL "https://github.com/nothings/stb/archive/refs/heads
 FetchContent_MakeAvailable(stb)
 FetchContent_GetProperties(stb)
 
-add_executable(mc_render
+find_package(OpenMP REQUIRED COMPONENTS CXX)
+
+add_executable(box_renderer
   main.cpp
+  source/Scalar.h
+  source/Bvh.h
   source/Box.h
   source/Box.cpp
   source/BoxStyle.h
@@ -36,6 +40,10 @@ add_executable(mc_render
   source/Utility.cpp
   source/stb.c)
 
-target_link_libraries(mc_render PRIVATE glm bvh nlohmann_json)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT box_renderer)
 
-target_include_directories(mc_render PRIVATE ${stb_SOURCE_DIR})
+target_compile_features(box_renderer PRIVATE cxx_std_20)
+
+target_link_libraries(box_renderer PRIVATE glm bvh nlohmann_json OpenMP::OpenMP_CXX)
+
+target_include_directories(box_renderer PRIVATE ${stb_SOURCE_DIR})

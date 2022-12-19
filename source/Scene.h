@@ -2,16 +2,22 @@
 
 #include <filesystem>
 
-#include <bvh/v2/vec.h>
-
 #include <glm/glm.hpp>
 
 #include "Box.h"
 #include "BoxStyle.h"
 #include "Camera.h"
 #include "Renderer.h"
+#include "Bvh.h"
 
 namespace mcr {
+
+struct Material final
+{
+  const Texture* texture{ nullptr };
+
+  bool is_light{ false };
+};
 
 struct SceneData final
 {
@@ -19,9 +25,9 @@ struct SceneData final
 
   std::vector<BoxStyle> box_styles;
 
-  std::vector<Box> diffuse_boxes;
+  Vec3 background{ 0, 0, 0 };
 
-  std::vector<Box> emissive_boxes;
+  std::vector<Box> boxes;
 };
 
 class Scene final

@@ -2,6 +2,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include <bvh/v2/default_builder.h>
+
 #include <fstream>
 
 namespace mcr {
@@ -13,11 +15,9 @@ class ErrorHandler final
 public:
   ErrorHandler(void* caller, void (*callback)(void*, const char* err))
     : caller_(caller)
-    , callback_(callback)
+      , callback_(callback)
   {
   }
-
-  void call(const char* error) { callback_(caller_, error); }
 
 private:
   void* caller_;
@@ -28,7 +28,7 @@ private:
 class SceneLoader final
 {
 public:
-  SceneLoader(ErrorHandler error_handler)
+  explicit SceneLoader(const ErrorHandler error_handler)
     : error_handler_(error_handler)
   {
   }
@@ -43,31 +43,22 @@ public:
 
     file.open(path);
 
+    const std::filesystem::path directory_path = path.parent_path();
+
     const auto root = nlohmann::json::parse(file);
 
     for (const auto& node : root["BoxStyles"])
-      data_.box_styles.emplace_back(BoxStyle(node));
+      data_.box_styles.emplace_back(BoxStyle(node, directory_path));
 
     for (const auto& node : root["Cameras"])
       data_.cameras.emplace_back(Camera(node));
 
-    for (const auto& node : root["DiffuseBoxes"])
-      data_.diffuse_boxes.emplace_back(Box(node));
-
-    for (const auto& node : root["EmissiveBoxes"])
-      data_.emissive_boxes.emplace_back(Box(node));
+    for (const auto& node : root["Boxes"])
+      data_.boxes.emplace_back(Box(node));
 
     return true;
   }
 
-private:
-  bool error(const char* error_message)
-  {
-    error_handler_.call(error_message);
-    return false;
-  }
-
-private:
   ErrorHandler error_handler_;
 
   SceneData data_;
@@ -82,7 +73,7 @@ Scene::load(const std::filesystem::path& path,
 {
   try {
 
-    ErrorHandler error_handler(caller, error_callback);
+    const ErrorHandler error_handler(caller, error_callback);
 
     SceneLoader loader(error_handler);
 

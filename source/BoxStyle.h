@@ -2,7 +2,10 @@
 
 #include <nlohmann/json_fwd.hpp>
 
+#include <filesystem>
+
 #include "Texture.h"
+#include "Scalar.h"
 
 namespace mcr {
 
@@ -20,11 +23,11 @@ struct BoxStyle final
 
   Texture back_color;
 
-  double box_size_x{ 1 };
+  bvh::v2::Vec<Scalar, 3> box_size{ 1, 1, 1 };
 
-  double box_size_y{ 1 };
+  Scalar light_scale{ 0 };
 
-  explicit BoxStyle(const nlohmann::json& node);
+  explicit BoxStyle(const nlohmann::json& node, const std::filesystem::path& directory_path);
 };
 
 } // namespace mcr

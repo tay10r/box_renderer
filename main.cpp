@@ -8,7 +8,7 @@
 using namespace mcr;
 
 int
-main(int argc, char** argv)
+main(const int argc, char** argv)
 {
   if (argc != 2) {
     std::cerr << "Usage: " << argv[0] << " <scene.json>" << std::endl;
@@ -19,14 +19,14 @@ main(int argc, char** argv)
 
   Scene scene;
 
-  auto error_handler = [](void*, const char* error) {
+  const auto error_handler = [](void*, const char* error) {
     std::cerr << error << std::endl;
   };
 
   if (!scene.load(scene_path, nullptr, error_handler))
     return EXIT_FAILURE;
 
-  auto renderer = scene.start_rendering();
+  const auto renderer = scene.start_rendering();
 
   while (!renderer->done()) {
 

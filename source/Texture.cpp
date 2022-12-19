@@ -12,7 +12,7 @@ namespace mcr {
 namespace {
 
 unsigned char
-get_nibble(char c)
+get_nibble(const char c)
 {
   if ((c >= '0') && (c <= '9'))
     return c - '0';
@@ -24,12 +24,12 @@ get_nibble(char c)
   throw std::runtime_error("invalid character in hex color code");
 }
 
-double
-get_color(char hi, char lo)
+Scalar
+get_color(const char hi, const char lo)
 {
-  const unsigned char color = (get_nibble(hi) << 8) | get_nibble(lo);
+  const unsigned char color = (get_nibble(hi) << 4) | static_cast<int>(get_nibble(lo));
 
-  return color / 255.0;
+  return static_cast<int>(color) / static_cast<Scalar>(255);
 }
 
 Texture
@@ -38,32 +38,57 @@ from_hex_color_code(const std::string& str)
   if ((str.size() != 7) && (str.size() != 9))
     throw std::runtime_error("incorrectly sized hex color code");
 
-  const double r = get_color(str[1], str[2]);
-  const double g = get_color(str[3], str[4]);
-  const double b = get_color(str[5], str[6]);
-  const double a = (str.size() == 9) ? get_color(str[7], str[8]) : 1.0;
+  const auto r = get_color(str[1], str[2]);
+  const auto g = get_color(str[3], str[4]);
+  const auto b = get_color(str[5], str[6]);
+  const auto a = (str.size() == 9) ? get_color(str[7], str[8]) : static_cast<Scalar>(1);
 
-  int w = 1;
-  int h = 1;
+  constexpr auto w = 1;
+  constexpr auto h = 1;
   std::vector<Texture::Color> colors;
   colors.resize(1);
   colors[0] = Texture::Color(r, g, b, a);
-  return Texture(w, h, std::move(colors));
+
+  return { w, h, std::move(colors) };
 }
 
 Texture
-from_image_path(const std::string& str)
+from_image_path(const std::string& str, const std::filesystem::path& directory_path)
 {
-  int w = 1;
-  int h = 1;
-  std::vector<Texture::Color> colors;
-  colors.resize(1);
-  colors[0] = Texture::Color(1, 0, 0, 1);
-  return Texture(w, h, std::move(colors));
+  const auto full_path = directory_path / std::filesystem::path(str);
+
+  const auto full_path_str = full_path.string();
+
+  int w = 0;
+  int h = 0;
+
+  auto* pixels = stbi_load(full_path_str.c_str(), &w, &h, nullptr, 4);
+
+  if (pixels == nullptr) {
+    constexpr auto w = 1;
+    constexpr auto h = 1;
+    std::vector<Texture::Color> colors;
+    colors.resize(1);
+    colors[0] = Texture::Color(1, 0, 0, 1);
+    return { w, h, std::move(colors) };
+  }
+
+  std::vector<Texture::Color> colors(w * h);
+
+  for (int i = 0; i < (w * h); i++) {
+    colors[i][0] = static_cast<Scalar>(static_cast<int>(pixels[(i * 4) + 0])) / 255;
+    colors[i][1] = static_cast<Scalar>(static_cast<int>(pixels[(i * 4) + 1])) / 255;
+    colors[i][2] = static_cast<Scalar>(static_cast<int>(pixels[(i * 4) + 2])) / 255;
+    colors[i][3] = static_cast<Scalar>(static_cast<int>(pixels[(i * 4) + 3])) / 255;
+  }
+
+  stbi_image_free(pixels);
+
+  return { w, h, std::move(colors) };
 }
 
 Texture
-from_json_node(const nlohmann::json& node)
+from_json_node(const nlohmann::json& node, const std::filesystem::path& directory_path)
 {
   const auto str = node.get<std::string>();
 
@@ -74,20 +99,20 @@ from_json_node(const nlohmann::json& node)
   if (str[0] == '#')
     return from_hex_color_code(str);
 
-  return from_image_path(str);
+  return from_image_path(str, directory_path);
 }
 
 } // namespace
 
-Texture::Texture(const nlohmann::json& node)
-  : Texture(from_json_node(node))
+Texture::Texture(const nlohmann::json& node, const std::filesystem::path& directory_path)
+  : Texture(from_json_node(node, directory_path))
 {
 }
 
-Texture::Texture(int w, int h, std::vector<Color> color)
+Texture::Texture(const int w, const int h, std::vector<Color> color)
   : color_(std::move(color))
-  , width_(w)
-  , height_(h)
+    , width_(w)
+    , height_(h)
 {
 }
 
@@ -98,10 +123,10 @@ Texture::save_png(const char* path) const
 
   for (int i = 0; i < (width_ * height_); i++) {
 
-    const auto r = clamp(static_cast<int>(color_[i][0] * 255.0), 0, 255);
-    const auto g = clamp(static_cast<int>(color_[i][1] * 255.0), 0, 255);
-    const auto b = clamp(static_cast<int>(color_[i][2] * 255.0), 0, 255);
-    const auto a = clamp(static_cast<int>(color_[i][3] * 255.0), 0, 255);
+    const auto r = clamp(static_cast<int>(color_[i][0] * 255), 0, 255);
+    const auto g = clamp(static_cast<int>(color_[i][1] * 255), 0, 255);
+    const auto b = clamp(static_cast<int>(color_[i][2] * 255), 0, 255);
+    const auto a = clamp(static_cast<int>(color_[i][3] * 255), 0, 255);
 
     color[(i * 4) + 0] = static_cast<unsigned char>(r);
     color[(i * 4) + 1] = static_cast<unsigned char>(g);

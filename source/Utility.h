@@ -4,6 +4,8 @@
 
 #include <bvh/v2/vec.h>
 
+#include "Scalar.h"
+
 namespace mcr {
 
 template<typename T>
@@ -12,6 +14,7 @@ min(T a, T b)
 {
   return a < b ? a : b;
 }
+
 template<typename T>
 T
 max(T a, T b)
@@ -26,7 +29,7 @@ clamp(T x, T min_value, T max_value)
   return max(min(x, max_value), min_value);
 }
 
-bvh::v2::Vec<double, 3>
+bvh::v2::Vec<Scalar, 3>
 get_xyz(const nlohmann::json& node);
 
 } // namespace mcr
